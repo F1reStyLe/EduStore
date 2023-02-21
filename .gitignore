@@ -139,6 +139,7 @@ sdist/
 var/
 wheels/
 *.egg-info/
+fixtures/
 .installed.cfg
 *.egg
 
