@@ -1,6 +1,8 @@
+from email.mime import message
+
 from django.shortcuts import render, HttpResponseRedirect
 from .forms import UserLoginForm, UserRegistrationForm, UserProfileForm
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.urls import reverse
 
 
@@ -27,6 +29,7 @@ def register(request):
         form = UserRegistrationForm(data=request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Пользователь успешно зарегистрирован')
             return HttpResponseRedirect(reverse('login'))
     else:
         form = UserRegistrationForm()
