@@ -1,25 +1,30 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from products.models import ProductCategory, Product, Basket
-from users.models import User
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
     return render(request, 'products/index.html')
 
 
-def products(request):
-    category = ProductCategory.objects.all()
-    product = Product.objects.all()
+def products(request, category_id=None):
+    if category_id:
+        category = ProductCategory.objects.get(id=category_id)
+        products = Product.objects.filter(category=category)
+    else:
+        products = Product.objects.all()
+
     context = {
         "title": "Store",
-        "categories": category,
-        "products": product,
+        "categories": ProductCategory.objects.all(),
+        "products": products
     }
 
     return render(request, 'products/products.html', context)
 
 
+@login_required
 def basket_add(request, product_id):
     product = Product.objects.get(id=product_id)
     baskets = Basket.objects.filter(user=request.user, product=product)
@@ -34,6 +39,7 @@ def basket_add(request, product_id):
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
+@login_required
 def basket_remove(request, basket_id):
     basked = Basket.objects.get(id=basket_id)
     basked.delete()
