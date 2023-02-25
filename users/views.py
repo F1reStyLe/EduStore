@@ -4,6 +4,7 @@ from django.contrib import auth, messages
 from django.urls import reverse
 from products.models import Basket
 
+
 def login(request):
     if request.method == 'POST':
         form = UserLoginForm(data=request.POST)

@@ -1,6 +1,7 @@
 from django.db import models
 from users.models import User
 
+
 class ProductCategory(models.Model):
     name = models.CharField(max_length=128, null=False, db_index=True, verbose_name="Имя категории")
     description = models.TextField(null=True, blank=True, verbose_name="Описание")
@@ -43,7 +44,7 @@ class Basket(models.Model):
     quantity = models.PositiveSmallIntegerField(default=0, verbose_name='Количество')
     created_timestamp = models.DateTimeField(auto_now_add=True, verbose_name='Время добавлеения')
 
-    object = BasketQuerySet.as_manager()
+    objects = BasketQuerySet.as_manager()
 
     def __str__(self):
         return f'Корзина {self.user.username} | Продукт {self.product.name}'
