@@ -20,7 +20,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
     quantity = models.PositiveSmallIntegerField(default=0, verbose_name="Количество")
     image = models.ImageField(upload_to="products_images", verbose_name="Изображение")
-    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, verbose_name='Категория')
 
     def __str__(self):
         return f"{self.name} | {self.category}"
@@ -42,7 +42,7 @@ class Basket(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name='Пользователь')
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE, verbose_name='Продукт')
     quantity = models.PositiveSmallIntegerField(default=0, verbose_name='Количество')
-    created_timestamp = models.DateTimeField(auto_now_add=True, verbose_name='Время добавлеения')
+    created_timestamp = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления')
 
     objects = BasketQuerySet.as_manager()
 

@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from products.models import ProductCategory, Product
-from users.models import User
+from products.models import ProductCategory, Product,Basket
 
 
 @admin.register(ProductCategory)
@@ -10,10 +9,15 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Product)
-class Product(admin.ModelAdmin):
-    pass
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'quantity', 'category')
+    fields = ('name', 'description', ('price', 'quantity'), 'image', 'category')
+    search_fields = ('name',)
+    ordering = ('name', 'quantity',)
 
 
-@admin.register(User)
-class User(admin.ModelAdmin):
-    pass
+class BasketAdmin(admin.TabularInline):
+    model = Basket
+    fields = ('product', 'quantity', 'created_timestamp',)
+    readonly_fields = ('created_timestamp',)
+    extra = 0
