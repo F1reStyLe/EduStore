@@ -1,9 +1,8 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponseRedirect
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 
 from .forms import UserLoginForm, UserRegistrationForm, UserProfileForm
-from django.contrib import auth, messages
+from django.contrib import auth
 from django.urls import reverse, reverse_lazy
 from products.models import Basket
 from .models import User
@@ -33,6 +32,32 @@ class UserRegistrationView(CreateView):
     template_name = 'users/register.html'
     success_url = reverse_lazy('login')
 
+    def get_context_data(self, **kwargs):
+        context = super(UserRegistrationView, self).get_context_data()
+        context['title'] = 'Store - Регистрация'
+
+        return context
+
+
+class UserProfileView(UpdateView):
+    model = User
+    form_class = UserProfileForm
+    template_name = 'users/profile.html'
+
+    def get_success_url(self):
+        return reverse_lazy('profile', args=(self.object.id,))
+
+    def get_context_data(self, **kwargs):
+        context = super(UserProfileView, self).get_context_data()
+        context['title'] = 'Store - Личный кабинет'
+        context['baskets'] = Basket.objects.filter(user=self.object)
+
+        return context
+
+
+def logout(request):
+    auth.logout(request)
+    return HttpResponseRedirect(reverse('index'))
 
 
 # def register(request):
@@ -48,24 +73,19 @@ class UserRegistrationView(CreateView):
 #     return render(request, 'users/register.html', context)
 
 
-@login_required
-def profile(request):
-    if request.method == "POST":
-        form = UserProfileForm(instance=request.user, data=request.POST, files=request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('profile'))
-        else:
-            print(form.errors)
-    else:
-        form = UserProfileForm(instance=request.user)
-    context = {
-        'form': form,
-        'baskets': Basket.objects.filter(user=request.user),
-    }
-    return render(request, 'users/profile.html', context)
-
-
-def logout(request):
-    auth.logout(request)
-    return HttpResponseRedirect(reverse('index'))
+# @login_required
+# def profile(request):
+#     if request.method == "POST":
+#         form = UserProfileForm(instance=request.user, data=request.POST, files=request.FILES)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect(reverse('profile'))
+#         else:
+#             print(form.errors)
+#     else:
+#         form = UserProfileForm(instance=request.user)
+#     context = {
+#         'form': form,
+#         'baskets': Basket.objects.filter(user=request.user),
+#     }
+#     return render(request, 'users/profile.html', context)
