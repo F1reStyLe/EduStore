@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.views.generic import CreateView, UpdateView
+from django.contrib.auth.views import LoginView, LogoutView
 
 from .forms import UserLoginForm, UserRegistrationForm, UserProfileForm
 from django.contrib import auth
@@ -8,22 +9,9 @@ from products.models import Basket
 from .models import User
 
 
-def login(request):
-    if request.method == 'POST':
-        form = UserLoginForm(data=request.POST)
-        if form.is_valid():
-            username = request.POST['username']
-            password = request.POST['password']
-            user = auth.authenticate(username=username, password=password)
-            if user:
-                auth.login(request, user)
-                return HttpResponseRedirect(reverse('index'))
-    else:
-        form = UserLoginForm()
-    context = {
-        'form': form,
-    }
-    return render(request, 'users/login.html', context)
+class UserLoginView(LoginView):
+    template_name = 'users/login.html'
+    form_class = UserLoginForm
 
 
 class UserRegistrationView(CreateView):
@@ -89,3 +77,20 @@ def logout(request):
 #         'baskets': Basket.objects.filter(user=request.user),
 #     }
 #     return render(request, 'users/profile.html', context)
+
+# def login(request):
+#     if request.method == 'POST':
+#         form = UserLoginForm(data=request.POST)
+#         if form.is_valid():
+#             username = request.POST['username']
+#             password = request.POST['password']
+#             user = auth.authenticate(username=username, password=password)
+#             if user:
+#                 auth.login(request, user)
+#                 return HttpResponseRedirect(reverse('index'))
+#     else:
+#         form = UserLoginForm()
+#     context = {
+#         'form': form,
+#     }
+#     return render(request, 'users/login.html', context)
