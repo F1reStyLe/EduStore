@@ -1,14 +1,12 @@
-from django.shortcuts import render, HttpResponseRedirect
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, TemplateView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
-
+from django.shortcuts import HttpResponseRedirect
 from common.views import TitleMixin
 from .forms import UserLoginForm, UserRegistrationForm, UserProfileForm
-from django.contrib import auth
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy, reverse
 from products.models import Basket
-from .models import User
+from .models import User, EmailVerification
 
 
 class UserLoginView(TitleMixin, LoginView):
@@ -42,9 +40,25 @@ class UserProfileView(TitleMixin, UpdateView):
         return context
 
 
-def logout(request):
-    auth.logout(request)
-    return HttpResponseRedirect(reverse('index'))
+class EmailVerificationView(TitleMixin, TemplateView):
+    template_name = 'users/email_verification.html'
+    title = 'Store - Подтверждение электронной почты'
+
+    def get(self, request, *args, **kwargs):
+        code = kwargs['code']
+        user = User.objects.get(email=kwargs['email'])
+        email_verification = EmailVerification.objects.filter(user=user, code=code)
+        if email_verification.exists() and not email_verification.first().is_expired():
+            user.is_verified_email = True
+            user.save()
+            return super(EmailVerificationView, self).get(request, *args, **kwargs)
+        else:
+            return HttpResponseRedirect(reverse('index'))
+
+
+# def logout(request):
+#     auth.logout(request)
+#     return HttpResponseRedirect(reverse('index'))
 
 
 # def register(request):
