@@ -115,6 +115,9 @@ fabric.properties
 # Sonarlint plugin
 .idea/sonarlint
 
+# Linterns
+.flake8
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 *.py[cod]
